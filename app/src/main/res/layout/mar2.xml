@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:background="@drawable/xqbg" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textSize="180.0dip" android:textColor="#ffffffff" android:gravity="center" android:layout_gravity="bottom|center|right" android:id="@+id/gg" android:background="@drawable/bgg5" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="患者请先查视力后报到" android:singleLine="true" />
+    <TextView android:textSize="45.0dip" android:textColor="#ff000000" android:gravity="right" android:layout_gravity="center|right|top" android:id="@+id/tv" android:layout_width="700.0dip" android:layout_height="111.0dip" android:layout_marginTop="85.0dip" android:layout_marginRight="10.0dip" android:text="text" />
+</FrameLayout>
