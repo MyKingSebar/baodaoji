@@ -39,6 +39,7 @@ import com.printsdk.usbsdk.UsbDriver;
 import com.youngsee.posterdisplayer.R;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,8 +78,6 @@ public class MainActivity
     Response3030 response3030 = null;
     Request1301 request1301;
     private int rotate = 0;
-
-
 
 
     private static final String ACTION_USB_PERMISSION = "com.usb.sample.USB_PERMISSION";
@@ -131,6 +130,7 @@ public class MainActivity
     int fangdoutime = 0;
     Handler handler = new Handler() {
         public void handleMessage(Message paramAnonymousMessage) {
+            Log.i("aaaa", "paramAnonymousMessage.what:" + paramAnonymousMessage);
             switch (paramAnonymousMessage.what) {
                 default:
                     return;
@@ -185,6 +185,16 @@ public class MainActivity
                     return;
                 case 3:
                     Toast.makeText(MainActivity.this.getApplication(), "报到成功", Toast.LENGTH_SHORT).show();
+                    return;
+                case 404:
+
+                    t.setText("网络未连接,请检查网络");
+                    if (popuWindow.isShowing()) {
+                        popuWindow.dismiss();
+                    }
+                    dialogtime = 5;
+                    popuWindow.showAtLocation(main, Gravity.CENTER, 0, 0);
+//                    Toast.makeText(MainActivity.this.getApplication(), "网络未连接,请检查网络", Toast.LENGTH_SHORT).show();
                     return;
                 case 1:
                     try {
@@ -334,7 +344,7 @@ public class MainActivity
     String state = "";
     private String strData = "";
     TextView t;
-    boolean test = false;
+    boolean test = true;
     String text = "";
     TextView time;
     Handler timehandler = new Handler();
@@ -443,6 +453,7 @@ public class MainActivity
                 break;
             case 7:
                 sMsg.append(paperExh);     // 纸尽==缺纸
+                zantingfuwu = true;
                 break;
             case 1:
                 sMsg.append(notConnectedOrNotPopwer);
@@ -706,7 +717,7 @@ public class MainActivity
                         SoapObject localObject3 = (SoapObject) envelope.bodyIn;
                         if (localObject3 != null) {
                             Log.i("SOAPtest", "envelope.GetPatLnfo" + envelope.bodyIn);
-                            SoapObject localSoapObject = (SoapObject)localObject3.getProperty(0);
+                            SoapObject localSoapObject = (SoapObject) localObject3.getProperty(0);
                             Log.i("SOAPtest", "object2.getPropertyCount():" + localSoapObject.getPropertyCount());
                             envelope = null;
                             if (localSoapObject.getPropertyCount() == 13) {
@@ -745,7 +756,7 @@ public class MainActivity
                                 Log.i("finalre3030", response3030.toString());
                             }
 
-                            Message msg = MainActivity.this.handler.obtainMessage();
+                            Message msg = handler.obtainMessage();
                             msg.obj = response3030;
                             msg.what = 1;
                             MainActivity.this.handler.sendMessage(msg);
@@ -760,10 +771,17 @@ public class MainActivity
                         }
 
                     }
-                } catch (IOException e) {
+                } catch (ConnectException e) {
+                    Log.i("aaaa", "Exception4");
+                    Message msg = handler.obtainMessage();
+                    msg.what = 404;
+                    handler.sendMessage(msg);
                     e.printStackTrace();
-
+                } catch (IOException e) {
+                    Log.i("aaaa", "Exception2");
+                    e.printStackTrace();
                 } catch (XmlPullParserException e) {
+                    Log.i("aaaa", "Exception3");
                     e.printStackTrace();
                 }
             }
@@ -830,11 +848,12 @@ public class MainActivity
         super.onCreate(paramBundle);
         setContentView(R.layout.mar);
         if (this.test) {
-            getSharedPreferences("TR", 0).edit().putString("name", "XQ001").putString("text", "请先检查视力后报到").commit();
+            getSharedPreferences("TR", 0).edit().putString("name", "03973").putString("text", "请先检查视力后报到").commit();
+//            getSharedPreferences("TR", 0).edit().putString("name", "XQ001").putString("text", "请先检查视力后报到").commit();
         }
 
-            main = getLayoutInflater().inflate(R.layout.mar, null);
-            main.setSystemUiVisibility(2);
+        main = getLayoutInflater().inflate(R.layout.mar, null);
+        main.setSystemUiVisibility(2);
         init();
         request1301List = new ArrayList();
         request3030List = new ArrayList();
@@ -858,7 +877,7 @@ public class MainActivity
             String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
             Log.i("test", "getkeycode:" + keystring);
             if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
-                if (!zantingfuwu) {
+                if (zantingfuwu) {
                     Log.i("jialei", "zantingfuwu=true");
                     this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");
                     if (this.popuWindow.isShowing()) {
@@ -889,6 +908,7 @@ public class MainActivity
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Log.i("aaaa", "Exception");
                         }
 
                     } else {
@@ -928,7 +948,6 @@ public class MainActivity
         }
         return false;
     }
-
 
 
     @Override
