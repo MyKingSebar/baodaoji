@@ -15,6 +15,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +60,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class MainActivity
         extends Activity {
+
+    private SoundPool soundPool;
 
     private UsbDevice m_Device;
     SimpleDateFormat m_sdfDate = new SimpleDateFormat("HH:mm:ss");
@@ -182,6 +187,8 @@ public class MainActivity
                     }
                     MainActivity.this.dialogtime = 5;
                     MainActivity.this.popuWindow.showAtLocation(MainActivity.this.main, 17, 0, 0);
+                    //播放声音
+                    soundPool.play(1,1, 1, 0, 0, 1);
                     return;
                 case 3:
                     Toast.makeText(MainActivity.this.getApplication(), "报到成功", Toast.LENGTH_SHORT).show();
@@ -344,7 +351,7 @@ public class MainActivity
     String state = "";
     private String strData = "";
     TextView t;
-    boolean test = true;
+    boolean test = false;
     String text = "";
     TextView time;
     Handler timehandler = new Handler();
@@ -365,6 +372,8 @@ public class MainActivity
         endPoint2 = "http://192.168.102.20/csp/i-empi/DHC.Doctor.BS.SendPatInfoToDoctor.CLS";
         soapAction2 = "http://tempuri.org/OPAllocAutoReport";
     }
+
+    private String text1;
 
     // Get UsbDriver(UsbManager) service
     private boolean PrintConnStatus() {
@@ -476,6 +485,12 @@ public class MainActivity
         text = localSharedPreferences.getString("text", "");
         if (TextUtils.equals(this.text, "")) {
             MessageDialog.getInstance(this).setMsg("请设置计算机名称！！！").show();
+//            this.t.setText("请设置计算机名称！！！");
+//            if (this.popuWindow.isShowing()) {
+//                this.popuWindow.dismiss();
+//            }
+//            this.dialogtime = 5;
+//            this.popuWindow.showAtLocation(this.main, Gravity.CENTER, 0, 0);
         }
         tv_text.setText(this.text);
         timehandler.postDelayed(this.runnable, 0L);
@@ -634,7 +649,9 @@ public class MainActivity
 
     private void initPopupWindow() {
         this.view = getLayoutInflater().inflate(R.layout.dialog_message, null);
-        this.popuWindow = new PopupWindow(this.view, -2, -2);
+        //TODO
+//        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.popuWindow.setOutsideTouchable(true);
         this.popuWindow.setFocusable(false);
         this.t = ((TextView) this.view.findViewById(R.id.tv_msg));
@@ -848,9 +865,10 @@ public class MainActivity
         super.onCreate(paramBundle);
         setContentView(R.layout.mar);
         if (this.test) {
-            getSharedPreferences("TR", 0).edit().putString("name", "03973").putString("text", "请先检查视力后报到").commit();
+            getSharedPreferences("TR", 0).edit().putString("name", "03973").putString("text", "请先检查视力后报到\n报到后请取号条").commit();
 //            getSharedPreferences("TR", 0).edit().putString("name", "XQ001").putString("text", "请先检查视力后报到").commit();
         }
+        getSharedPreferences("TR", 0).edit().putString("text", "请先检查视力后报到\n报到后请取号条").commit();
 
         main = getLayoutInflater().inflate(R.layout.mar, null);
         main.setSystemUiVisibility(2);
@@ -858,7 +876,9 @@ public class MainActivity
         request1301List = new ArrayList();
         request3030List = new ArrayList();
 
-        getSharedPreferences("TR", 0).edit().putString("text", "请先检查视力后报到").commit();
+        soundPool= new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
+
+        soundPool.load(this,R.raw.baodao,1);
 
     }
 
@@ -877,6 +897,7 @@ public class MainActivity
             String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
             Log.i("test", "getkeycode:" + keystring);
             if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
+//                soundPool.play(1,1, 1, 0, 0, 1);
                 if (zantingfuwu) {
                     Log.i("jialei", "zantingfuwu=true");
                     this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");

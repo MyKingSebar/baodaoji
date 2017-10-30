@@ -2,7 +2,7 @@
 <resources>
 
     <string name="terminal">终端</string>
-    <string name="app_name">USB打印2.2</string>
+    <string name="app_name">报道机</string>
     
     <string name="Add_Path">添加路径</string>
     <!-- CheckBox 打印位图功能选项-->
