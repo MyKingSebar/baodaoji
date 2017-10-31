@@ -650,8 +650,8 @@ public class MainActivity
     private void initPopupWindow() {
         this.view = getLayoutInflater().inflate(R.layout.dialog_message, null);
         //TODO
-//        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.popuWindow.setOutsideTouchable(true);
         this.popuWindow.setFocusable(false);
         this.t = ((TextView) this.view.findViewById(R.id.tv_msg));

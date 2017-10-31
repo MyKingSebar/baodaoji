@@ -2,5 +2,6 @@
 <RelativeLayout android:id="@+id/dialog_layout" android:background="#ffffffff" android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView android:textSize="40.0sp" android:id="@+id/tv_msg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="30.0dip" android:text="Message" android:layout_centerHorizontal="true" />
-    <Button android:textSize="18.0dip" android:gravity="center_horizontal" android:id="@+id/bt_confirm" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="确定" android:layout_below="@id/tv_msg" />
-</RelativeLayout>
+    <!-- <TextView android:textSize="40.0sp" android:id="@+id/tv_msg" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerVertical="true" android:text="Message" android:layout_centerHorizontal="true" />-->
+     <Button android:textSize="18.0dip" android:gravity="center_horizontal" android:id="@+id/bt_confirm" android:visibility="invisible" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="确定" android:layout_below="@id/tv_msg" />
+ </RelativeLayout>
