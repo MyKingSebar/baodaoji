@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout android:background="@drawable/bx6" android:layout_width="fill_parent" android:layout_height="fill_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView android:textSize="180.0dip" android:textColor="#ffffffff" android:gravity="center" android:layout_gravity="center|right|top" android:id="@+id/gg" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="700.0dip" android:layout_marginTop="300.0dip" android:text="患者请先查视力后报到/n报道后请取号条"  />
+    <LinearLayout
+        android:layout_gravity="center|right|top"
+        android:layout_width="fill_parent"
+        android:layout_height="700.0dip"
+        android:layout_marginTop="300.0dip"
+        >
+    <TextView android:textSize="130.0dip" android:textColor="#ffffffff" android:gravity="center"  android:id="@+id/gg" android:layout_width="0dp" android:layout_weight="3" android:layout_height="match_parent"  android:text="患者请先查视力后报到\n报道后请取号条"  />
+
+    <TextView android:textSize="50.0dip" android:textColor="#ffffff00" android:gravity="left|center_vertical"  android:id="@+id/gg2"  android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent"  android:text="   报到机使用说明\n\n步骤一：将就诊卡放入下方凹槽处\n\n步骤二：等待报到处理\n\n步骤三：报到成功后请在下方取号口取走号条"  />
+
+    </LinearLayout>
 <!--    <TextView android:textSize="180.0dip" android:textColor="#ffffffff" android:gravity="center" android:layout_gravity="center|right|top" android:id="@+id/gg" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="fill_parent" android:layout_height="300.0dip" android:layout_marginTop="500.0dip" android:text="患者请先查视力后报到" android:singleLine="true" />-->
     <TextView android:textSize="45.0dip" android:textColor="#ff000000" android:gravity="right" android:layout_gravity="center|right|top" android:id="@+id/tv" android:layout_width="700.0dip" android:layout_height="111.0dip" android:layout_marginTop="100.0dip" android:layout_marginRight="10.0dip" android:text="text" />
 </FrameLayout>

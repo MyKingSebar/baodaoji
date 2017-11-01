@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.media.AudioManager;
@@ -141,6 +142,7 @@ public class MainActivity
                     return;
                 case 1301:
                     MainActivity.this.t.setText("服务器异常：1301");
+                    stv.setVisibility(View.INVISIBLE);
                     if (MainActivity.this.popuWindow.isShowing()) {
                         MainActivity.this.popuWindow.dismiss();
                     }
@@ -149,6 +151,7 @@ public class MainActivity
                     return;
                 case 3030:
                     MainActivity.this.t.setText("服务器异常：3030");
+                    stv.setVisibility(View.INVISIBLE);
                     if (MainActivity.this.popuWindow.isShowing()) {
                         MainActivity.this.popuWindow.dismiss();
                     }
@@ -158,6 +161,7 @@ public class MainActivity
                 case 6:
                     Toast.makeText(MainActivity.this.getApplicationContext(), (String) paramAnonymousMessage.obj, Toast.LENGTH_SHORT).show();
                     MainActivity.this.t.setText("报到失败-没有可报到的挂号记录");
+                    stv.setVisibility(View.INVISIBLE);
                     if (MainActivity.this.popuWindow.isShowing()) {
                         MainActivity.this.popuWindow.dismiss();
                     }
@@ -168,6 +172,7 @@ public class MainActivity
                     MainActivity.this.response1301 = ((Response1301) paramAnonymousMessage.obj);
                     if (MainActivity.this.response1301 == null) {
                         MainActivity.this.t.setText("报到失败：1301");
+                        stv.setVisibility(View.INVISIBLE);
                         if (MainActivity.this.popuWindow.isShowing()) {
                             MainActivity.this.popuWindow.dismiss();
                         }
@@ -180,8 +185,13 @@ public class MainActivity
                         return;
                     }
                     String a = MainActivity.this.response1301.getTip().replace("^", "\n\n");
+
+                    //TODO 添加打印信息：请取号条
+                    a="报到成功后请取号条\n\n"+a;
+
                     MainActivity.this.getPrintTicketData(MainActivity.this.mUsbDev1);
                     MainActivity.this.t.setText(a);
+                    stv.setVisibility(View.VISIBLE);
                     if (MainActivity.this.popuWindow.isShowing()) {
                         MainActivity.this.popuWindow.dismiss();
                     }
@@ -194,8 +204,13 @@ public class MainActivity
                     Toast.makeText(MainActivity.this.getApplication(), "报到成功", Toast.LENGTH_SHORT).show();
                     return;
                 case 404:
-
                     t.setText("网络未连接,请检查网络");
+                    if(test){
+                        stv.setVisibility(View.VISIBLE);
+                    }else{
+                        stv.setVisibility(View.INVISIBLE);
+                    }
+//                    stv.setVisibility(View.VISIBLE);
                     if (popuWindow.isShowing()) {
                         popuWindow.dismiss();
                     }
@@ -210,6 +225,7 @@ public class MainActivity
                         if (MainActivity.this.response3030 == null) {
                             Log.i("报到", "response3030==null");
                             MainActivity.this.t.setText("无此病人信息,请重新刷卡！");
+                            stv.setVisibility(View.INVISIBLE);
                             if (MainActivity.this.popuWindow.isShowing()) {
                                 MainActivity.this.popuWindow.dismiss();
                             }
@@ -219,6 +235,7 @@ public class MainActivity
                         } else {
                             if (TextUtils.equals(MainActivity.this.name, "")) {
                                 MainActivity.this.t.setText("请联系工作人员设置计算机名称！");
+                                stv.setVisibility(View.INVISIBLE);
                                 if (MainActivity.this.popuWindow.isShowing()) {
                                     MainActivity.this.popuWindow.dismiss();
                                 }
@@ -254,6 +271,7 @@ public class MainActivity
                                 Toast.makeText(MainActivity.this.getApplicationContext(), "报到失败", Toast.LENGTH_SHORT).show();
 
                                 MainActivity.this.t.setText("报到失败! /n" + (String) paramAnonymousMessage.obj);
+                                stv.setVisibility(View.INVISIBLE);
                                 if (MainActivity.this.popuWindow.isShowing()) {
                                     MainActivity.this.popuWindow.dismiss();
                                 }
@@ -351,12 +369,13 @@ public class MainActivity
     String state = "";
     private String strData = "";
     TextView t;
-    boolean test = false;
+    ShinTextView stv;
+    boolean test = true;
     String text = "";
     TextView time;
     Handler timehandler = new Handler();
     private String title = "";
-    TextView tv_text;
+    TextView tv_text,tv_text2;
     String twocode = "";
     String twocode2 = "";
     private int underLine = 0;
@@ -479,6 +498,11 @@ public class MainActivity
 
     private void findView() {
         tv_text = ((TextView) findViewById(R.id.gg));
+        tv_text2 = ((TextView) findViewById(R.id.gg2));
+        Typeface typeFace1 = Typeface.createFromAsset(getAssets(), "fonts/fangsong.TTF");
+        tv_text2.setTypeface(typeFace1);
+
+
         time = ((TextView) findViewById(R.id.tv));
         SharedPreferences localSharedPreferences = getSharedPreferences("TR", 0);
         name = localSharedPreferences.getString("name", "");
@@ -654,7 +678,8 @@ public class MainActivity
 //        this.popuWindow = new PopupWindow(this.view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         this.popuWindow.setOutsideTouchable(true);
         this.popuWindow.setFocusable(false);
-        this.t = ((TextView) this.view.findViewById(R.id.tv_msg));
+        this.t = ((TextView) view.findViewById(R.id.tv_msg));
+        stv= (ShinTextView) view.findViewById(R.id.textshin);
         this.dialoghandler.postDelayed(this.dialogrunnable, 0L);
     }
 
@@ -878,7 +903,8 @@ public class MainActivity
 
         soundPool= new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
 
-        soundPool.load(this,R.raw.baodao,1);
+//        soundPool.load(this,R.raw.baodao,1);
+        soundPool.load(this,R.raw.bdcgqqht,1);
 
     }
 
@@ -897,10 +923,14 @@ public class MainActivity
             String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
             Log.i("test", "getkeycode:" + keystring);
             if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
-//                soundPool.play(1,1, 1, 0, 0, 1);
+                if(test){
+
+                    soundPool.play(1,1, 1, 0, 0, 1);
+                }
                 if (zantingfuwu) {
                     Log.i("jialei", "zantingfuwu=true");
                     this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");
+                    stv.setVisibility(View.INVISIBLE);
                     if (this.popuWindow.isShowing()) {
                         this.popuWindow.dismiss();
                     }
@@ -934,6 +964,7 @@ public class MainActivity
 
                     } else {
                         this.t.setText("卡片无效,请重新刷卡!");
+                        stv.setVisibility(View.INVISIBLE);
                         if (this.popuWindow.isShowing()) {
                             this.popuWindow.dismiss();
                         }
