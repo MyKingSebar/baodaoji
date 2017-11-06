@@ -370,7 +370,7 @@ public class MainActivity
     private String strData = "";
     TextView t;
     ShinTextView stv;
-    boolean test = true;
+    boolean test = false;
     String text = "";
     TextView time;
     Handler timehandler = new Handler();
@@ -923,10 +923,10 @@ public class MainActivity
             String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
             Log.i("test", "getkeycode:" + keystring);
             if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
-                if(test){
-
-                    soundPool.play(1,1, 1, 0, 0, 1);
-                }
+//                if(test){
+//
+//                    soundPool.play(1,1, 1, 0, 0, 1);
+//                }
                 if (zantingfuwu) {
                     Log.i("jialei", "zantingfuwu=true");
                     this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");
@@ -961,7 +961,7 @@ public class MainActivity
                             e.printStackTrace();
                             Log.i("aaaa", "Exception");
                         }
-
+                        twocode2="";
                     } else {
                         this.t.setText("卡片无效,请重新刷卡!");
                         stv.setVisibility(View.INVISIBLE);
