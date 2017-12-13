@@ -62,6 +62,11 @@ import org.xmlpull.v1.XmlPullParserException;
 public class MainActivity
         extends Activity {
 
+    public static String lastID = "";
+
+    boolean test = false;
+
+
     private SoundPool soundPool;
 
     private UsbDevice m_Device;
@@ -187,7 +192,7 @@ public class MainActivity
                     String a = MainActivity.this.response1301.getTip().replace("^", "\n\n");
 
                     //TODO 添加打印信息：请取号条
-                    a="报到成功后请取号条\n\n"+a;
+                    a = "报到成功后请取号条\n\n" + a;
 
                     MainActivity.this.getPrintTicketData(MainActivity.this.mUsbDev1);
                     MainActivity.this.t.setText(a);
@@ -198,16 +203,16 @@ public class MainActivity
                     MainActivity.this.dialogtime = 5;
                     MainActivity.this.popuWindow.showAtLocation(MainActivity.this.main, 17, 0, 0);
                     //播放声音
-                    soundPool.play(1,1, 1, 0, 0, 1);
+                    soundPool.play(1, 1, 1, 0, 0, 1);
                     return;
                 case 3:
                     Toast.makeText(MainActivity.this.getApplication(), "报到成功", Toast.LENGTH_SHORT).show();
                     return;
                 case 404:
                     t.setText("网络未连接,请检查网络");
-                    if(test){
+                    if (test) {
                         stv.setVisibility(View.VISIBLE);
-                    }else{
+                    } else {
                         stv.setVisibility(View.INVISIBLE);
                     }
 //                    stv.setVisibility(View.VISIBLE);
@@ -370,12 +375,12 @@ public class MainActivity
     private String strData = "";
     TextView t;
     ShinTextView stv;
-    boolean test = false;
+
     String text = "";
     TextView time;
     Handler timehandler = new Handler();
     private String title = "";
-    TextView tv_text,tv_text2;
+    TextView tv_text, tv_text2;
     String twocode = "";
     String twocode2 = "";
     private int underLine = 0;
@@ -679,7 +684,7 @@ public class MainActivity
         this.popuWindow.setOutsideTouchable(true);
         this.popuWindow.setFocusable(false);
         this.t = ((TextView) view.findViewById(R.id.tv_msg));
-        stv= (ShinTextView) view.findViewById(R.id.textshin);
+        stv = (ShinTextView) view.findViewById(R.id.textshin);
         this.dialoghandler.postDelayed(this.dialogrunnable, 0L);
     }
 
@@ -901,10 +906,10 @@ public class MainActivity
         request1301List = new ArrayList();
         request3030List = new ArrayList();
 
-        soundPool= new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
+        soundPool = new SoundPool(10, AudioManager.STREAM_SYSTEM, 5);
 
 //        soundPool.load(this,R.raw.baodao,1);
-        soundPool.load(this,R.raw.bdcgqqht,1);
+        soundPool.load(this, R.raw.bdcgqqht, 1);
 
     }
 
@@ -916,68 +921,88 @@ public class MainActivity
 
     public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent) {
         Log.i("test", "onkeydown" + paramInt + ":" + paramKeyEvent);
-        if (this.fangdoutime < 3) {
-            Log.i("test", "fangdoutime" + this.fangdoutime);
-        } else {
-            Log.i("test", "fangdoutime" + this.fangdoutime);
-            String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
-            Log.i("test", "getkeycode:" + keystring);
-            if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
+//        if (this.fangdoutime < 3) {
+//            Log.i("test", "fangdoutime" + this.fangdoutime);
+//        } else {
+        Log.i("test", "fangdoutime" + this.fangdoutime);
+        String keystring = KeyEvent.keyCodeToString(paramKeyEvent.getKeyCode());
+        Log.i("test", "getkeycode:" + keystring);
+        if (TextUtils.equals(keystring, "KEYCODE_ENTER")) {
 //                if(test){
 //
 //                    soundPool.play(1,1, 1, 0, 0, 1);
 //                }
-                if (zantingfuwu) {
-                    Log.i("jialei", "zantingfuwu=true");
-                    this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");
+            if (zantingfuwu) {
+                Log.i("jialei", "zantingfuwu=true");
+                this.t.setText("打印机缺纸，请联系相关人员换纸后重启！");
+                stv.setVisibility(View.INVISIBLE);
+                if (this.popuWindow.isShowing()) {
+                    this.popuWindow.dismiss();
+                }
+                this.dialogtime = 5;
+                this.popuWindow.showAtLocation(this.main, Gravity.CENTER, 0, 0);
+
+            } else {
+
+
+                if (!TextUtils.equals(this.twocode2, "")) {
+
+                    if (TextUtils.equals(lastID, twocode2)) {
+                        if (fangdoutime < 60) {
+                            Toast.makeText(MainActivity.this.getApplicationContext(), "请稍后再刷!", Toast.LENGTH_SHORT).show();
+                            twocode2 = "";
+//                                this.t.setText("请稍后再刷!");
+//                                stv.setVisibility(View.INVISIBLE);
+//                                if (this.popuWindow.isShowing()) {
+//                                    this.popuWindow.dismiss();
+//                                }
+//                                this.dialogtime = 5;
+//                                this.popuWindow.showAtLocation(this.main, 17, 0, 0);
+                                return super.onKeyDown(paramInt, paramKeyEvent);
+                        }
+
+                    }
+
+                    fangdoutime = 0;
+                    lastID = twocode2;
+                    Log.i("扫码2", this.twocode2);
+                    this.request3030List.clear();
+                    Request3030 request3030 = new Request3030();
+                    request3030.setTradeCode("3030");
+                    request3030.setPatientCard(this.twocode2);
+                    this.request3030List.add(request3030);
+                    try {
+
+                        String save3300string = pullpuser.save3300(this.request3030List);
+                        this.request3030List.clear();
+                        save3300string = save3300string.replace("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>", "");
+                        Log.i("扫码2", "pull2" + save3300string);
+                        if (save3300string != null && !TextUtils.equals(save3300string, "")) {
+                            getGetPatLnfo(save3300string);
+                        } else {
+                            Log.i("saomiao error:", "save3300string==null|save3300string=kong");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i("aaaa", "Exception");
+                    }
+                    twocode2 = "";
+                } else {
+                    this.t.setText("卡片无效,请重新刷卡!");
                     stv.setVisibility(View.INVISIBLE);
                     if (this.popuWindow.isShowing()) {
                         this.popuWindow.dismiss();
                     }
                     this.dialogtime = 5;
-                    this.popuWindow.showAtLocation(this.main, Gravity.CENTER, 0, 0);
-
-                } else {
-                    fangdoutime = 0;
-                    if (!TextUtils.equals(this.twocode2, "")) {
-                        Log.i("扫码2", this.twocode2);
-                        this.request3030List.clear();
-                        Request3030 request3030 = new Request3030();
-                        request3030.setTradeCode("3030");
-                        request3030.setPatientCard(this.twocode2);
-                        this.request3030List.add(request3030);
-                        try {
-
-                            String save3300string = pullpuser.save3300(this.request3030List);
-                            this.request3030List.clear();
-                            save3300string = save3300string.replace("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>", "");
-                            Log.i("扫码2", "pull2" + save3300string);
-                            if (save3300string != null && !TextUtils.equals(save3300string, "")) {
-                                getGetPatLnfo(save3300string);
-                            } else {
-                                Log.i("saomiao error:", "save3300string==null|save3300string=kong");
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Log.i("aaaa", "Exception");
-                        }
-                        twocode2="";
-                    } else {
-                        this.t.setText("卡片无效,请重新刷卡!");
-                        stv.setVisibility(View.INVISIBLE);
-                        if (this.popuWindow.isShowing()) {
-                            this.popuWindow.dismiss();
-                        }
-                        this.dialogtime = 5;
-                        this.popuWindow.showAtLocation(this.main, 17, 0, 0);
-                    }
+                    this.popuWindow.showAtLocation(this.main, 17, 0, 0);
                 }
-
-            } else if (!TextUtils.equals(keystring, "KEYCODE_NUM_LOCK")) {
-                String str = keystring.substring(keystring.length() - 1, keystring.length());
-                this.twocode2 += str;
             }
+
+        } else if (!TextUtils.equals(keystring, "KEYCODE_NUM_LOCK")) {
+            String str = keystring.substring(keystring.length() - 1, keystring.length());
+            this.twocode2 += str;
         }
+//        }
         return super.onKeyDown(paramInt, paramKeyEvent);
 
     }
